@@ -66,7 +66,7 @@ function quickSort(arr) {
     let rightArr = [];
     // split
     for (let i = 1; i < arr.length; i++) {
-        if (arr[i] <= pivot) {
+        if (arr[i] < pivot) {
             leftArr.push(arr[i]);
         }
         else {
@@ -76,9 +76,88 @@ function quickSort(arr) {
     return [...quickSort(leftArr), pivot, ...quickSort(rightArr)];
 }
 
+// Lomuto partition scheme 
+// 空間複雜度低，不須配置left, right sub array
+function quickSortLomuto(arr, startIndex, endIndex) {
+    if (startIndex < endIndex) {
+        let pivotNewPlace = quickSortPartition(arr, startIndex, endIndex);  // 1st partition
+        quickSortLomuto(arr, startIndex, pivotNewPlace - 1); // left sub array
+        quickSortLomuto(arr, pivotNewPlace + 1, endIndex); // right sub array
+    }
+}
+// partition 
+function quickSortPartition(arr, startIndex, endIndex) {
+    let pivot = endIndex;
+    let nextChangePlace = startIndex;
+    for (let i = startIndex; i < endIndex; i++) {
+        if (arr[i] < pivot) {
+            [arr[i], arr[nextChangePlace]] = [arr[nextChangePlace], arr[i]]; // swap using destructuring(ES6)
+            nextChangePlace++;
+        }
+    }
+    [arr[pivot], arr[nextChangePlace]] = [arr[nextChangePlace], arr[pivot]]; // swap the pivot and nextChangePlace to make the pivot in the middle of the arr
+    return nextChangePlace;
+}
+// quickSortLomuto(array, 0, array.length - 1);
+
+// Merge Sort
+// ascending sorting
+// O(nlogn) 
+function mergeSort(arr) {
+    // debugger;
+    // base case
+    if (arr.length < 2) {
+        return arr;
+    }
+    let middle = Math.floor(arr.length / 2);
+    let leftArr = arr.slice(0, middle);
+    let rightArr = arr.slice(middle, arr.length);
+    return merge(mergeSort(leftArr), mergeSort(rightArr));
+}
+
+function merge(leftArr, rightArr) {
+    // length of the left and right arrary are the same
+    let sortedArr = [];
+    // max comparision times: leftArr.length + rightArr.length
+    let maxComparision = leftArr.length + rightArr.length;
+    for (let i = 0; i <= maxComparision; i++) {         // -> execute n times
+        if (leftArr.length === 0) {
+            sortedArr = sortedArr.concat(rightArr);
+            break;
+        }
+        else if (rightArr.length === 0) {
+            sortedArr = sortedArr.concat(leftArr);
+            break;
+        }
+        else {
+            if (leftArr[0] <= rightArr[0]) {
+                sortedArr.push(leftArr[0]);
+                leftArr.splice(0, 1);
+            }
+            else {
+                sortedArr.push(rightArr[0]);
+                rightArr.splice(0, 1);
+            }
+        }
+    }
+    return sortedArr;
+
+    // shorter way 
+    // while (leftArr.length !== 0 && rightArr.length !== 0) {
+    //     if (leftArr[0] <= rightArr[0]) {
+    //         // shift(): 移除第一個陣列值，同時會將移除的值回傳
+    //         sortedArr.push(leftArr.shift());
+    //     }
+    //     else {
+    //         sortedArr.push(rightArr.shift());
+    //     }
+    // }
+    // return [...sortedArr, ...leftArr, ...rightArr];
+}
+
 
 // execute
-let array = [-6, 2, 8, 20, 4, 1];
-quickSort(array)
-console.log(array);
+var array = [-6, 2, 8, 20, 4, 1];
+
+console.log(mergeSort(array));
 
